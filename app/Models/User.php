@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'seller_status',
     ];
 
     /**
@@ -45,4 +47,64 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    // Relasi: User punya satu Store (jika role = seller)
+    public function store()
+    {
+        return $this->hasOne(Store::class);
+    }
+
+    // Relasi: User punya banyak Cart items
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    // Relasi: User punya banyak Orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    // Relasi: User punya banyak Reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Helper: Cek apakah user adalah Admin
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    // Helper: Cek apakah user adalah Seller
+    public function isSeller()
+    {
+        return $this->role === 'seller';
+    }
+
+    // Helper: Cek apakah user adalah Buyer
+    public function isBuyer()
+    {
+        return $this->role === 'buyer';
+    }
+
+    // Helper: Cek apakah Seller sudah disetujui
+    public function isApprovedSeller()
+    {
+        return $this->role === 'seller' && $this->seller_status === 'approved';
+    }
+
+    // Helper: Cek apakah Seller masih pending
+    public function isPendingSeller()
+    {
+        return $this->role === 'seller' && $this->seller_status === 'pending';
+    }
+
+    // Helper: Cek apakah Seller ditolak
+    public function isRejectedSeller()
+    {
+        return $this->role === 'seller' && $this->seller_status === 'rejected';
+    }
+
 }
