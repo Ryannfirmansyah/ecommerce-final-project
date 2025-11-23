@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // Tambahkan baris ini
+            $table->enum('role', ['admin', 'seller', 'buyer'])->default('buyer');
+            $table->enum('seller_status', ['pending', 'approved', 'rejected'])->nullable();
+            
             $table->rememberToken();
             $table->timestamps();
         });
