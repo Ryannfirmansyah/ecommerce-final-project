@@ -42,11 +42,24 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route untuk Admin (sementara placeholder)
+// Route untuk Admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // User Management
+    Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+    
+    // Seller Verification
+    Route::get('/pending-sellers', [App\Http\Controllers\Admin\UserController::class, 'pendingSellers'])->name('pending-sellers');
+    Route::post('/sellers/{user}/approve', [App\Http\Controllers\Admin\UserController::class, 'approveSeller'])->name('sellers.approve');
+    Route::post('/sellers/{user}/reject', [App\Http\Controllers\Admin\UserController::class, 'rejectSeller'])->name('sellers.reject');
+    
+    // Category Management
+    Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
 });
 
 // Route untuk Seller (sementara placeholder)
