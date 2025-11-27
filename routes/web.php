@@ -4,9 +4,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SellerController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Homepage - Public & Buyer
+Route::get('/', [App\Http\Controllers\ProductController::class, 'index'])->name('home');
+Route::get('/products/{product}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
 
 // Route untuk Seller Pending
 Route::middleware(['auth'])->group(function () {
@@ -82,11 +82,28 @@ Route::middleware(['auth', 'seller'])->prefix('seller')->name('seller.')->group(
     Route::put('/orders/{order}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.update-status');
 });
 
-// Route untuk Buyer (sementara placeholder)
+// Route untuk Buyer
 Route::middleware(['auth', 'buyer'])->prefix('buyer')->name('buyer.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Buyer\BuyerDashboardController::class, 'index'])->name('dashboard');
+    
+    // Cart Management
+    Route::get('/cart', [App\Http\Controllers\Buyer\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/{product}', [App\Http\Controllers\Buyer\CartController::class, 'store'])->name('cart.store');
+    Route::put('/cart/{cart}', [App\Http\Controllers\Buyer\CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{cart}', [App\Http\Controllers\Buyer\CartController::class, 'destroy'])->name('cart.destroy');
+    
+    // Checkout
+    Route::get('/checkout', [App\Http\Controllers\Buyer\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/process', [App\Http\Controllers\Buyer\CheckoutController::class, 'process'])->name('checkout.process');
+    
+    // Orders
+    Route::get('/orders', [App\Http\Controllers\Buyer\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [App\Http\Controllers\Buyer\OrderController::class, 'show'])->name('orders.show');
+    
+    // Reviews
+    Route::get('/orders/{order}/review/{product}', [App\Http\Controllers\Buyer\OrderController::class, 'reviewForm'])->name('orders.review-form');
+    Route::post('/orders/{order}/review/{product}', [App\Http\Controllers\Buyer\OrderController::class, 'submitReview'])->name('orders.submit-review');
 });
 
 Route::middleware('auth')->group(function () {
