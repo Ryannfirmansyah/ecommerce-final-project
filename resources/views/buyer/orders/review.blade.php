@@ -1,72 +1,160 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Write a Review
+            Review Product
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    {{ session('error') }}
-                </div>
-            @endif
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+                <div class="p-6 text-gray-900">
+                    
                     <!-- Product Info -->
-                    <div class="flex items-center mb-6 pb-6 border-b border-gray-200">
-                        @if($orderItem->product->image)
-                            <img src="{{ asset('storage/' . $orderItem->product->image) }}" alt="{{ $orderItem->product->name }}" class="w-20 h-20 rounded object-cover">
-                        @else
-                            <div class="w-20 h-20 bg-gray-200 rounded"></div>
+                    <div class="mb-6 flex items-center gap-4 pb-6 border-b">
+                        @if($product->image)
+                            <img src="{{ asset('storage/' . $product->image) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="h-20 w-20 rounded object-cover">
                         @endif
-                        <div class="ml-4">
-                            <h3 class="font-semibold text-gray-900">{{ $orderItem->product->name }}</h3>
-                            <p class="text-sm text-gray-600">{{ $orderItem->product->category->name }}</p>
-                            <p class="text-sm text-gray-600">by {{ $orderItem->product->store->name }}</p>
+                        <div>
+                            <h3 class="text-lg font-semibold">{{ $product->name }}</h3>
+                            <p class="text-sm text-gray-600">Order #{{ $order->id }}</p>
                         </div>
                     </div>
 
                     <!-- Review Form -->
-                    <form method="POST" action="{{ route('buyer.orders.submit-review', [$order, $orderItem->product_id]) }}">
+                    <form action="{{ route('buyer.orders.review.submit', ['order' => $order, 'product' => $product]) }}" 
+                          method="POST">
                         @csrf
-
-                        <!-- Rating -->
-                        <div>
-                            <x-input-label for="rating" :value="__('Rating')" />
-                            <div class="flex items-center space-x-2 mt-2">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="rating" value="{{ $i }}" class="sr-only peer" {{ old('rating') == $i ? 'checked' : '' }} required>
-                                        <svg class="w-8 h-8 text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        
+                        <!-- Rating Section - FIXED BUG #3 -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                Rating <span class="text-red-500">*</span>
+                            </label>
+                            
+                            <div class="flex items-center gap-2" id="star-rating">
+                                @for($i = 5; $i >= 1; $i--)
+                                    <label class="cursor-pointer star-label">
+                                        <input type="radio" 
+                                               name="rating" 
+                                               value="{{ $i }}" 
+                                               class="sr-only star-input"
+                                               onchange="updateStars({{ $i }})"
+                                               required>
+                                        <svg class="w-8 h-8 text-gray-300 transition-colors duration-200 star-icon" 
+                                             data-star="{{ $i }}"
+                                             fill="currentColor" 
+                                             viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                         </svg>
                                     </label>
                                 @endfor
                             </div>
-                            <x-input-error :messages="$errors->get('rating')" class="mt-2" />
+                            <p class="mt-2 text-xs text-gray-500">Klik bintang untuk memberikan rating (1-5)</p>
+                            
+                            @error('rating')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        <!-- Comment -->
-                        <div class="mt-4">
-                            <x-input-label for="comment" :value="__('Comment (Optional)')" />
-                            <textarea id="comment" name="comment" rows="4" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" placeholder="Share your experience with this product...">{{ old('comment') }}</textarea>
-                            <x-input-error :messages="$errors->get('comment')" class="mt-2" />
+                        <!-- Comment Section -->
+                        <div class="mb-6">
+                            <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">
+                                Review / Komentar <span class="text-red-500">*</span>
+                            </label>
+                            <textarea name="comment" 
+                                      id="comment" 
+                                      rows="5" 
+                                      class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                      placeholder="Bagikan pengalaman Anda tentang produk ini..."
+                                      required>{{ old('comment') }}</textarea>
+                            <p class="mt-1 text-xs text-gray-500">Minimal 10 karakter</p>
+                            
+                            @error('comment')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        <div class="flex items-center justify-end mt-6 space-x-3">
-                            <a href="{{ route('buyer.orders.show', $order) }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400">
+                        <!-- Submit Buttons -->
+                        <div class="flex gap-4">
+                            <button type="submit" 
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded transition">
+                                Submit Review
+                            </button>
+                            <a href="{{ route('buyer.orders.show', $order) }}" 
+                               class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded transition">
                                 Cancel
                             </a>
-                            <x-primary-button>
-                                Submit Review
-                            </x-primary-button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- FIXED BUG #3: JavaScript for Star Rating Visual Feedback -->
+    <script>
+        let selectedRating = 0;
+
+        function updateStars(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.star-icon');
+            
+            stars.forEach((star, index) => {
+                const starValue = parseInt(star.getAttribute('data-star'));
+                
+                if (starValue <= rating) {
+                    // Selected stars: yellow/gold
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                } else {
+                    // Unselected stars: gray
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        // Hover effect (optional but nice UX)
+        document.querySelectorAll('.star-label').forEach((label) => {
+            label.addEventListener('mouseenter', function() {
+                const input = this.querySelector('input');
+                const value = parseInt(input.value);
+                previewStars(value);
+            });
+        });
+
+        document.getElementById('star-rating').addEventListener('mouseleave', function() {
+            if (selectedRating > 0) {
+                updateStars(selectedRating);
+            } else {
+                resetStars();
+            }
+        });
+
+        function previewStars(rating) {
+            const stars = document.querySelectorAll('.star-icon');
+            stars.forEach((star) => {
+                const starValue = parseInt(star.getAttribute('data-star'));
+                if (starValue <= rating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                } else {
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        function resetStars() {
+            const stars = document.querySelectorAll('.star-icon');
+            stars.forEach((star) => {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-gray-300');
+            });
+        }
+    </script>
 </x-app-layout>

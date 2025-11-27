@@ -1,143 +1,150 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Order Details
+            Order Detail #{{ $order->id }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Success Message -->
-            @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <!-- Order Info -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Order #{{ $order->order_number }}</h3>
-                            <p class="text-sm text-gray-600 mt-1">{{ $order->created_at->format('d M Y, H:i') }}</p>
-                        </div>
-                        <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full
-                            @if($order->status === 'completed') bg-green-100 text-green-800
-                            @elseif($order->status === 'processing') bg-blue-100 text-blue-800
-                            @elseif($order->status === 'cancelled') bg-red-100 text-red-800
-                            @else bg-yellow-100 text-yellow-800
-                            @endif">
-                            {{ ucfirst($order->status) }}
-                        </span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Customer Info -->
-                        <div>
-                            <h4 class="text-sm font-semibold text-gray-900 mb-2">Customer Information</h4>
-                            <div class="text-sm text-gray-600">
-                                <p><strong>Name:</strong> {{ $order->user->name }}</p>
-                                <p><strong>Email:</strong> {{ $order->user->email }}</p>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    
+                    <!-- Order Information -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Order Information</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Order ID</p>
+                                <p class="font-medium">#{{ $order->id }}</p>
                             </div>
-                        </div>
-
-                        <!-- Shipping Address -->
-                        <div>
-                            <h4 class="text-sm font-semibold text-gray-900 mb-2">Shipping Address</h4>
-                            <div class="text-sm text-gray-600">
-                                <p>{{ $order->shipping_address ?? 'No address provided' }}</p>
+                            <div>
+                                <p class="text-sm text-gray-600">Order Date</p>
+                                <p class="font-medium">{{ $order->created_at->format('d M Y, H:i') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Status</p>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                    @if($order->status === 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif($order->status === 'processing') bg-blue-100 text-blue-800
+                                    @elseif($order->status === 'completed') bg-green-100 text-green-800
+                                    @else bg-red-100 text-red-800
+                                    @endif">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Total Amount</p>
+                                <p class="font-medium text-lg">Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Update Status -->
-                    <div class="mt-6 pt-6 border-t border-gray-200">
-                        <h4 class="text-sm font-semibold text-gray-900 mb-3">Update Order Status</h4>
-                        <form method="POST" action="{{ route('seller.orders.update-status', $order) }}" class="flex items-end gap-3">
+                    <!-- Shipping Information -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Shipping Information</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600">Shipping Address</p>
+                            <p class="font-medium">{{ $order->shipping_address }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Order Items</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($order->orderItems as $item)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                @if($item->product->image)
+                                                    <img src="{{ asset('storage/' . $item->product->image) }}" 
+                                                         alt="{{ $item->product->name }}" 
+                                                         class="h-10 w-10 rounded object-cover">
+                                                @endif
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        {{ $item->product->name }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $item->quantity }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            Rp {{ number_format($item->price, 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Update Status Form - FIXED BUG #1 -->
+                    @if($order->status !== 'completed')
+                    <div class="mt-6 bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-4">Update Order Status</h3>
+                        <form action="{{ route('seller.orders.update-status', $order) }}" method="POST">
                             @csrf
-                            @method('PUT')
+                            @method('PATCH')
                             
-                            <div class="flex-1">
-                                <select name="status" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <div class="mb-4">
+                                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Change Status
+                                </label>
+                                <!-- FIXED BUG #2: Added py-2 for vertical centering -->
+                                <select name="status" id="status" 
+                                        class="block w-full py-2 px-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                                     <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
                                     <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Completed</option>
                                     <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                 </select>
                             </div>
-                            
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
-                                Update Status
+
+                            <button type="submit" 
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                                UPDATE STATUS
                             </button>
                         </form>
                     </div>
-                </div>
-            </div>
-
-            <!-- Order Items -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Items</h3>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($order->orderItems as $item)
-                                    @if($item->product->store_id === auth()->user()->store->id)
-                                        <tr>
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center">
-                                                    @if($item->product->image)
-                                                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 rounded object-cover mr-3">
-                                                    @else
-                                                        <div class="w-12 h-12 bg-gray-200 rounded mr-3"></div>
-                                                    @endif
-                                                    <div>
-                                                        <div class="text-sm font-medium text-gray-900">{{ $item->product->name }}</div>
-                                                        <div class="text-xs text-gray-500">{{ $item->product->category->name }}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                Rp {{ number_format($item->price, 0, ',', '.') }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ $item->quantity }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                                Rp {{ number_format($item->subtotal(), 0, ',', '.') }}
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Total -->
-                    <div class="mt-6 pt-6 border-t border-gray-200">
-                        <div class="flex justify-end">
-                            <div class="text-right">
-                                <p class="text-sm text-gray-600">Total Order</p>
-                                <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
-                            </div>
+                    @else
+                    <!-- Completed Order Message - FIXED BUG #1 -->
+                    <div class="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <p class="text-sm font-medium text-green-800">
+                                Order ini telah selesai. Status tidak dapat diubah lagi.
+                            </p>
                         </div>
                     </div>
+                    @endif
 
-                    <div class="mt-6 flex justify-end">
-                        <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400">
-                            Back to Orders
+                    <!-- Back Button -->
+                    <div class="mt-6">
+                        <a href="{{ route('seller.orders.index') }}" 
+                           class="text-indigo-600 hover:text-indigo-900">
+                            ← Back to Orders
                         </a>
                     </div>
+
                 </div>
             </div>
         </div>
