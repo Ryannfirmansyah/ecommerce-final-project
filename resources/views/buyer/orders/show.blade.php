@@ -116,7 +116,7 @@
                                                         Reviewed
                                                     </span>
                                                 @else
-                                                    <a href="{{ route('buyer.orders.review-form', [$order, $item->product_id]) }}" class="inline-flex items-center px-3 py-1 border border-indigo-600 rounded-full text-xs font-medium text-indigo-600 hover:bg-indigo-50 transition-colors duration-150">
+                                                    <a href="{{ route('buyer.orders.review-form', [$order, $item->product_id]) }}" class="inline-flex items-center px-3 py-1 border border-indigo-600 rounded-full text-xs font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors duration-150">
                                                         Add Review
                                                     </a>
                                                 @endif
