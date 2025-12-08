@@ -107,4 +107,14 @@ class User extends Authenticatable
         return $this->role === 'seller' && $this->seller_status === 'rejected';
     }
 
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    // Helper: Cek apakah product ada di wishlist si User
+    public function hasWishlisted($productId)
+    {
+        return $this->wishlists()->where('product_id', $productId)->exists();
+    }
 }

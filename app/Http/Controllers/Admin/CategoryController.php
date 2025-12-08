@@ -6,13 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
     // Tampilkan semua kategori
     public function index()
     {
-        $categories = Category::withCount('products')->orderBy('name')->paginate(10);
+        $search = request('search');
+        if ($search) {
+            $categories = Category::where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orderBy('name')
+                ->paginate(10);
+        } else {
+            $categories = Category::withCount('products')->orderBy('name')->paginate(10);
+        }
+        
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -28,12 +38,21 @@ class CategoryController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:categories'],
             'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'jpg|jpeg|png', 'image', 'max:2048'],
         ]);
+
+        // simpan image jika ada
+        $imageUrl = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('categories', 'public');
+            $imageUrl = asset('storage/' . $imagePath);
+        }
 
         Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+            'image' => $imageUrl,
         ]);
 
         return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil ditambahkan!');
@@ -50,13 +69,28 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . $category->id],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],    
+            'image' => ['nullable', 'jpg|jpeg|png', 'image', 'max:2048'],
         ]);
+
+
+        $imageUrl = $category->image;
+        // Hapus image lama jika ada dan upload yang baru
+        if ($request->hasFile('image')) {                
+            if ($imageUrl) {
+                $oldImagePath = str_replace(asset('storage/'), '', $category->image);
+                Storage::disk('public')->delete($oldImagePath);
+            }
+
+            $imagePath = $request->file('image')->store('categories', 'public');
+            $imageUrl = asset('storage/' . $imagePath);
+        }
 
         $category->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+            'image' => $imageUrl,
         ]);
 
         return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diupdate!');

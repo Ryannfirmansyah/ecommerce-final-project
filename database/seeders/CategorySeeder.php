@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Category;
+use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
@@ -14,27 +13,22 @@ class CategorySeeder extends Seeder
             [
                 'name' => 'Electronics',
                 'slug' => 'electronics',
-                'description' => 'Laptops, Smartphones, Tablets, and other electronic devices',
+                'description' => 'Laptops, Smartphones, Tablets, and other electronic devices'
             ],
             [
                 'name' => 'Gaming',
                 'slug' => 'gaming',
-                'description' => 'Gaming consoles, controllers, headsets, and accessories',
+                'description' => 'Gaming consoles, controllers, headsets, and accessories'
             ],
             [
                 'name' => 'Fashion',
                 'slug' => 'fashion',
-                'description' => 'Shoes, clothes, bags, and fashion accessories',
+                'description' => 'Shoes, clothes, bags, and fashion accessories'
             ],
             [
                 'name' => 'Books',
                 'slug' => 'books',
-                'description' => 'Fiction, educational, and lifestyle books',
-            ],
-            [
-                'name' => 'Home & Living',
-                'slug' => 'home-living',
-                'description' => 'Furniture, decor, and home essentials',
+                'description' => 'Fiction, educational, and lifestyle books'
             ],
         ];
 

@@ -7,13 +7,13 @@ use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
 {
-    // Form create store
     public function create()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Jika sudah punya toko, redirect ke edit
         if ($user->store) {
@@ -23,7 +23,6 @@ class StoreController extends Controller
         return view('seller.store.create');
     }
 
-    // Simpan store baru
     public function store(Request $request)
     {
         $request->validate([
@@ -32,7 +31,7 @@ class StoreController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Cek apakah sudah punya toko
         if ($user->store) {
@@ -56,10 +55,9 @@ class StoreController extends Controller
         return redirect()->route('seller.dashboard')->with('success', 'Toko berhasil dibuat!');
     }
 
-    // Form edit store
     public function edit()
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         if (!$store) {
             return redirect()->route('seller.store.create');
@@ -68,10 +66,9 @@ class StoreController extends Controller
         return view('seller.store.edit', compact('store'));
     }
 
-    // Update store
     public function update(Request $request)
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:stores,name,' . $store->id],

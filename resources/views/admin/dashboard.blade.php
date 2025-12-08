@@ -1,120 +1,87 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Admin Dashboard
-        </h2>
-    </x-slot>
+    <header class="bg-white border-b border-gray-200 px-4 py-3 sm:px-6 lg:px-8 md:py-4">
+        <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">
+            <a href="{{ route('admin.dashboard') }}" class="hover:text-black">Dashboard</a>
+        </div>
+        <h2 class="font-bold text-xl sm:text-2xl text-black">Welcome Admin!</h2>
+    </header>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <!-- Total Users -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Total Users</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_users'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pending Sellers -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Pending Sellers</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $stats['pending_sellers'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Total Products -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Total Products</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_products'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Total Categories -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">Categories</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_categories'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <main class="flex-1 p-6 md:p-12 overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-400 font-bold uppercase mb-2">Total Users</p>
+                <h3 class="text-3xl font-serif font-bold">{{ $stats['total_users'] }}</h3>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <a href="{{ route('admin.users.index') }}" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-                            <svg class="h-8 w-8 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                            <div>
-                                <p class="font-semibold text-gray-900">Manage Users</p>
-                                <p class="text-sm text-gray-600">View and manage all users</p>
-                            </div>
-                        </a>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-400 font-bold uppercase mb-2">Total Sellers</p>
+                <h3 class="text-3xl font-serif font-bold">{{ $stats['total_sellers'] }}</h3>
+            </div>
 
-                        <a href="{{ route('admin.pending-sellers') }}" class="flex items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
-                            <svg class="h-8 w-8 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div>
-                                <p class="font-semibold text-gray-900">Verify Sellers</p>
-                                <p class="text-sm text-gray-600">Approve or reject sellers</p>
-                            </div>
-                        </a>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-400 font-bold uppercase mb-2">Pending Sellers</p>
+                <h3 class="text-3xl font-serif font-bold text-yellow-500">
+                    {{ $stats['pending_count'] }}
+                </h3>
+            </div>
 
-                        <a href="{{ route('admin.categories.index') }}" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-                            <svg class="h-8 w-8 text-purple-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                            </svg>
-                            <div>
-                                <p class="font-semibold text-gray-900">Manage Categories</p>
-                                <p class="text-sm text-gray-600">Add or edit categories</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-400 font-bold uppercase mb-2">Total Orders</p>
+                <h3 class="text-3xl font-serif font-bold">{{ $stats['total_orders'] }}</h3>
             </div>
         </div>
-    </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-50 flex justify-between items-center">
+                <h3 class="font-bold text-lg">New Sellers (Pending)</h3>
+                <a href="{{ route('admin.sellers', ['status' => 'pending']) }}" class="text-xs font-bold text-blue-600 hover:underline">View All &rarr;</a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50/50">
+                        <tr>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Name</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Email</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Registered</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        {{-- Kita loop variabel $pendingSellers (List User), bukan $stats (Array angka) --}}
+                        @forelse($pendingSellers as $seller)
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-sm">{{ $seller->name }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $seller->email }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $seller->created_at->diffForHumans() }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <form action="{{ route('admin.sellers.approve', $seller->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="px-4 py-1.5 bg-neutral-900 text-white text-xs font-bold rounded-full hover:bg-green-600 transition shadow-sm">
+                                            Approve
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('admin.sellers.reject', $seller->id) }}" method="POST" onsubmit="return confirm('Reject seller ini?');">
+                                        @csrf
+                                        <button type="submit" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-bold rounded-full hover:bg-red-50 transition">
+                                            Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-10 text-center text-gray-400 text-sm">
+                                No pending sellers at the moment.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 </x-app-layout>

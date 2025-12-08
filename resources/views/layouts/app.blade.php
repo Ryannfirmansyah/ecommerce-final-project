@@ -1,36 +1,49 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - NexusPlace Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-['Poppins'] bg-slate-300">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <div x-data="{ sidebarOpen: false }" class="flex w-full h-screen overflow-hidden">
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        <div x-show="sidebarOpen"
+                 @click="sidebarOpen = false"
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 md:hidden"
+        ></div>
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+        @include('layouts.navigation')
+
+        <div class="min-h-screen flex-1 bg-slate-100 flex flex-col overflow-hidden">
+            <!-- Topbar -->
+            <header class="bg-white border-b border-gray-200 p-4 flex items-center justify-between md:hidden z-30">
+                <div class="flex items-center gap-3">
+                    <button @click="sidebarOpen = true" class="text-gray-500 hover:text-black focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <span class="font-bold text-lg">NexusPlace</span>
+                </div>
+            </header>
 
             <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+            {{ $slot }}
         </div>
-    </body>
+    </div>
+
+    <x-toast/>
+</body>
 </html>

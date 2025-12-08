@@ -8,13 +8,13 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
-    // List semua produk seller
-    public function index()
+    public function index(Request $request)
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         if (!$store) {
             return redirect()->route('seller.store.create')->with('error', 'Buat toko terlebih dahulu!');
@@ -22,13 +22,24 @@ class ProductController extends Controller
 
         $products = $store->products()->with('category')->latest()->paginate(10);
 
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $products = $store->products()
+                ->where('name', 'like', '%' . $search . '%')
+                ->orWhereHas('category', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->with('category')
+                ->latest()
+                ->paginate(10);
+        }
+
         return view('seller.products.index', compact('products'));
     }
 
-    // Form create product
     public function create()
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         if (!$store) {
             return redirect()->route('seller.store.create')->with('error', 'Buat toko terlebih dahulu!');
@@ -39,10 +50,9 @@ class ProductController extends Controller
         return view('seller.products.create', compact('categories'));
     }
 
-    // Simpan product baru
     public function store(Request $request)
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -73,10 +83,9 @@ class ProductController extends Controller
         return redirect()->route('seller.products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
-    // Form edit product
     public function edit(Product $product)
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         // Pastikan produk milik seller ini
         if ($product->store_id !== $store->id) {
@@ -88,10 +97,9 @@ class ProductController extends Controller
         return view('seller.products.edit', compact('product', 'categories'));
     }
 
-    // Update product
     public function update(Request $request, Product $product)
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         // Pastikan produk milik seller ini
         if ($product->store_id !== $store->id) {
@@ -131,10 +139,9 @@ class ProductController extends Controller
         return redirect()->route('seller.products.index')->with('success', 'Produk berhasil diupdate!');
     }
 
-    // Delete product
     public function destroy(Product $product)
     {
-        $store = auth()->user()->store;
+        $store = Auth::user()->store;
 
         // Pastikan produk milik seller ini
         if ($product->store_id !== $store->id) {

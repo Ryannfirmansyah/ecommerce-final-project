@@ -12,12 +12,19 @@ class Category extends Model
     protected $fillable = [
         'name',
         'slug',
-        'description'
+        'description',
+        'image'
     ];
 
     // Relationship: Category has many Products
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    // Relasi "Has Many Through" untuk menghitung total item terjual per kategori
+    public function orderItems()
+    {
+        return $this->hasManyThrough(OrderItem::class, Product::class);
     }
 }
